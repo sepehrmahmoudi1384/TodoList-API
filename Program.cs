@@ -1,6 +1,5 @@
-using TodoList_API;
-using TodoList_API.Services;
 using TodoList_API.Data;
+using TodoList_API.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 

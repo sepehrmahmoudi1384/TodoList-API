@@ -11,7 +11,7 @@ using TodoList_API.Data.Context;
 namespace TodoList_API.Data.Migrations
 {
     [DbContext(typeof(TodoListContext))]
-    [Migration("20260705140547_InitialCreate")]
+    [Migration("20260706132659_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -26,7 +26,7 @@ namespace TodoList_API.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<DateOnly>("DueDate")
+                    b.Property<DateTime>("DueDate")
                         .HasColumnType("TEXT");
 
                     b.Property<bool>("IsCompleted")

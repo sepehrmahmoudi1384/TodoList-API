@@ -19,7 +19,7 @@ namespace TodoList_API.Data.Migrations
                         .Annotation("Sqlite:Autoincrement", true),
                     Title = table.Column<string>(type: "TEXT", nullable: false),
                     IsCompleted = table.Column<bool>(type: "INTEGER", nullable: false),
-                    DueDate = table.Column<DateOnly>(type: "TEXT", nullable: false)
+                    DueDate = table.Column<DateTime>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {

@@ -9,4 +9,5 @@ public interface ITodoService
     void Update(Todo todo);
     void Delete(Todo todo);
     Task Add(Todo todo);
+    Task SaveChangesAsync();
 }

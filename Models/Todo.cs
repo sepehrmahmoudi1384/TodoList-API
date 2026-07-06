@@ -10,9 +10,8 @@ public class Todo
     [Required]
     public required string Title { get; set; }
     
-    [DefaultValue(false)]
-    public bool IsCompleted { get; set; }
+    public bool IsCompleted { get; set; } = false;
 
     [Required]
-    public DateOnly DueDate { get; set; }
+    public required DateTime DueDate { get; set; }
 }

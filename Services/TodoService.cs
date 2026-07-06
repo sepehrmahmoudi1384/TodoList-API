@@ -16,10 +16,15 @@ public class TodoService(TodoListContext dbContext)
         => _dbContext.Todos.Remove(todo);
 
     public async Task<IEnumerable<Todo>> GetAll()
-        => await _dbContext.Todos.ToListAsync();
+        => await _dbContext.Todos
+            .AsNoTracking()
+            .ToListAsync();
 
     public async Task<Todo?> GetById(int id)
         => await _dbContext.Todos.FindAsync(id);
+
+    public async Task SaveChangesAsync() =>
+        await _dbContext.SaveChangesAsync();
 
     public void Update(Todo todo)
         => _dbContext.Todos.Update(todo);

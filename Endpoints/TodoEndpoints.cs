@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Http.HttpResults;
 using TodoList_API.Data.Context;
 using TodoList_API.DTOs;
 using TodoList_API.Models;
@@ -120,10 +121,38 @@ public static class TodoEndpoints
         );
 
         // GET /todos/completed
+        todoGroup.MapGet(
+            "/completed",
+            async (ITodoService todoService)
+                => await todoService
+                            .GetAll(todo => todo.IsCompleted == true)
+        );
 
         // GET /todos/pending
+        todoGroup.MapGet(
+            "/pending",
+            async (ITodoService todoService)
+                => await todoService
+                            .GetAll(todo => todo.IsCompleted == false)
+        );
 
-        // GET /todos?search=...
-        
+        // GET /find?title=...
+        todoGroup.MapGet(
+            "/find",
+            async (string? title, ITodoService todoService) =>
+            {
+                if (string.IsNullOrEmpty(title))
+                    return Results.BadRequest(
+                        $"You should specify a value for title parameter!"
+                    );
+                
+                var foundTodos = await todoService
+                                    .GetAll(
+                                        todo => todo.Title.Contains(title)
+                                    );
+
+                return Results.Ok(foundTodos);
+            }
+        );
     }
 }

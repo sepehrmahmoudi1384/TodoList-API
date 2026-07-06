@@ -1,3 +1,4 @@
+using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
 using TodoList_API.Data.Context;
 using TodoList_API.Models;
@@ -7,7 +8,7 @@ namespace TodoList_API.Services;
 public class TodoService(TodoListContext dbContext)
     : ITodoService
 {
-    private TodoListContext _dbContext = dbContext;
+    private readonly TodoListContext _dbContext = dbContext;
 
     public async Task Add(Todo todo)
         => await _dbContext.Todos.AddAsync(todo);
@@ -19,6 +20,11 @@ public class TodoService(TodoListContext dbContext)
         => await _dbContext.Todos
             .AsNoTracking()
             .ToListAsync();
+
+    public async Task<IEnumerable<Todo>> GetAll(Expression<Func<Todo, bool>> predicate)
+        => await _dbContext.Todos
+                .Where(predicate)
+                .ToListAsync();
 
     public async Task<Todo?> GetById(int id)
         => await _dbContext.Todos.FindAsync(id);

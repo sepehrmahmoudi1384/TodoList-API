@@ -29,9 +29,9 @@ public static class TodoEndpoints
         // GET /todos/1
         todoGroup.MapGet(
             "/{id}",
-            async (int id, ITodoRepository todoService) =>
+            async (int id, ITodoRepository todoRepository) =>
             {
-                var todo = await todoService.GetById(id);
+                var todo = await todoRepository.GetById(id);
 
                 if (todo is null)
                     return Results.NotFound();
@@ -44,7 +44,7 @@ public static class TodoEndpoints
         // POST /todos
         todoGroup.MapPost(
             "/",
-            async (CreateTodoDTO todoDTO, ITodoRepository todoService) =>
+            async (CreateTodoDTO todoDTO, ITodoRepository todoRepository) =>
             {
                 if (!todoDTO.IsValidDueDate())
                     return Results.BadRequest(
@@ -58,8 +58,8 @@ public static class TodoEndpoints
 
                 todoDTO.TryParseTodoDTO(out Todo todo);
 
-                await todoService.Add(todo);
-                await todoService.SaveChangesAsync();
+                await todoRepository.Add(todo);
+                await todoRepository.SaveChangesAsync();
 
                 return Results.CreatedAtRoute(
                     GetByIdEndpoint,
@@ -72,17 +72,17 @@ public static class TodoEndpoints
         // DELETE /todos/1
         todoGroup.MapDelete(
             "/{id}",
-            async (int id, ITodoRepository todoService) =>
+            async (int id, ITodoRepository todoRepository) =>
             {
-                var todo = await todoService.GetById(id);
+                var todo = await todoRepository.GetById(id);
 
                 if (todo is null)
                     return Results.NotFound(
                         $"A todo item with id={id} not found!"
                     );
 
-                todoService.Delete(todo);
-                await todoService.SaveChangesAsync();
+                todoRepository.Delete(todo);
+                await todoRepository.SaveChangesAsync();
 
                 return Results.NoContent();
             }
@@ -91,9 +91,9 @@ public static class TodoEndpoints
         // PATCH /todos/1
         todoGroup.MapPatch(
             "/{id}",
-            async (int id, UpdateTodoDTO todoDTO, ITodoRepository todoService) =>
+            async (int id, UpdateTodoDTO todoDTO, ITodoRepository todoRepository) =>
             {
-                var todo = await todoService.GetById(id);
+                var todo = await todoRepository.GetById(id);
 
                 if (todo is null)
                     return Results.NotFound(
@@ -102,7 +102,7 @@ public static class TodoEndpoints
 
                 todo.PatchTodo(todoDTO);
 
-                await todoService.SaveChangesAsync();
+                await todoRepository.SaveChangesAsync();
 
                 return Results.NoContent();
             }
@@ -111,28 +111,28 @@ public static class TodoEndpoints
         // GET /todos/completed
         todoGroup.MapGet(
             "/completed",
-            async (ITodoRepository todoService)
-                => await todoService.GetComplete()
+            async (ITodoRepository todoRepository)
+                => await todoRepository.GetComplete()
         );
 
         // GET /todos/pending
         todoGroup.MapGet(
             "/pending",
-            async (ITodoRepository todoService)
-                => await todoService.GetInComplete()
+            async (ITodoRepository todoRepository)
+                => await todoRepository.GetInComplete()
         );
 
         // GET /find?title=...
         todoGroup.MapGet(
             "/find",
-            async (string? title, ITodoRepository todoService) =>
+            async (string? title, ITodoRepository todoRepository) =>
             {
                 if (!title.IsValidateTitle())
                     return Results.BadRequest(
                         $"You should specify a value for title parameter!"
                     );
                 
-                var foundTodos = await todoService.SearchByTitle(title!);
+                var foundTodos = await todoRepository.SearchByTitle(title!);
 
                 return Results.Ok(foundTodos);
             }

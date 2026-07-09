@@ -3,10 +3,12 @@ using TodoList_API.Models;
 
 namespace TodoList_API.Services;
 
-public interface ITodoService
+public interface ITodoRepository
 {
     Task<IEnumerable<Todo>> GetAll();
-    Task<IEnumerable<Todo>> GetAll(Expression<Func<Todo, bool>> predicate);
+    Task<IEnumerable<Todo>> GetComplete();
+    Task<IEnumerable<Todo>> GetInComplete();
+    Task<IEnumerable<Todo>> SearchByTitle(string title);
     Task<Todo?> GetById(int id);
     void Update(Todo todo);
     void Delete(Todo todo);

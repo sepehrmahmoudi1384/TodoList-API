@@ -5,7 +5,7 @@ using TodoList_API.Services;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddValidation();
-builder.Services.AddScoped<ITodoService, TodoService>();
+builder.Services.AddScoped<ITodoRepository, TodoRepository>();
 builder.AddTodoListDb();
 
 var app = builder.Build();

@@ -5,8 +5,8 @@ using TodoList_API.Models;
 
 namespace TodoList_API.Services;
 
-public class TodoService(TodoListContext dbContext)
-    : ITodoService
+public class TodoRepository(TodoListContext dbContext)
+    : ITodoRepository
 {
     private readonly TodoListContext _dbContext = dbContext;
 
@@ -21,9 +21,14 @@ public class TodoService(TodoListContext dbContext)
             .AsNoTracking()
             .ToListAsync();
 
-    public async Task<IEnumerable<Todo>> GetAll(Expression<Func<Todo, bool>> predicate)
+    public async Task<IEnumerable<Todo>> GetComplete()
         => await _dbContext.Todos
-                .Where(predicate)
+                .Where(todo => todo.IsCompleted == true)
+                .ToListAsync();
+                
+    public async Task<IEnumerable<Todo>> GetInComplete()
+        => await _dbContext.Todos
+                .Where(todo => todo.IsCompleted == false)
                 .ToListAsync();
 
     public async Task<Todo?> GetById(int id)
@@ -31,6 +36,11 @@ public class TodoService(TodoListContext dbContext)
 
     public async Task SaveChangesAsync() =>
         await _dbContext.SaveChangesAsync();
+
+    public async Task<IEnumerable<Todo>> SearchByTitle(string title)
+        => await _dbContext.Todos
+                .Where(todo => todo.Title.Contains(title))
+                .ToListAsync();
 
     public void Update(Todo todo)
         => _dbContext.Todos.Update(todo);

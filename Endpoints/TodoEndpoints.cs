@@ -1,8 +1,8 @@
-using Microsoft.AspNetCore.Http.HttpResults;
-using TodoList_API.Data.Context;
 using TodoList_API.DTOs;
+using TodoList_API.DTOs.Extensions;
 using TodoList_API.Models;
 using TodoList_API.Services;
+using TodoList_API.Services.Extensions;
 
 namespace TodoList_API.Endpoints;
 
@@ -19,9 +19,9 @@ public static class TodoEndpoints
         // GET /todos
         todoGroup.MapGet(
             "/",
-            async (ITodoService todoService) =>
+            async (ITodoRepository todoRepository) =>
             {
-                var todos = await todoService.GetAll();
+                var todos = await todoRepository.GetAll();
                 return Results.Ok(todos);
             }
         );
@@ -29,11 +29,11 @@ public static class TodoEndpoints
         // GET /todos/1
         todoGroup.MapGet(
             "/{id}",
-            async (int id, ITodoService todoService) =>
+            async (int id, ITodoRepository todoService) =>
             {
                 var todo = await todoService.GetById(id);
 
-                if (todo == null)
+                if (todo is null)
                     return Results.NotFound();
 
                 return Results.Ok(todo);
@@ -44,24 +44,19 @@ public static class TodoEndpoints
         // POST /todos
         todoGroup.MapPost(
             "/",
-            async (CreateTodoDTO todoDTO, ITodoService todoService) =>
+            async (CreateTodoDTO todoDTO, ITodoRepository todoService) =>
             {
                 if (!todoDTO.IsValidDueDate())
                     return Results.BadRequest(
                         $"This Due Time '{todoDTO.DueDate}' is for the past!"
                     );
 
-                if (todoDTO.Title == null)
+                if (todoDTO.Title is null)
                     return Results.BadRequest(
                         "You don't specified any title for the task!"
                     );
 
-                var todo = new Todo
-                {
-                    Title = todoDTO.Title,
-                    DueDate = todoDTO.DueDate,
-                    IsCompleted = false
-                };
+                todoDTO.TryParseTodoDTO(out Todo todo);
 
                 await todoService.Add(todo);
                 await todoService.SaveChangesAsync();
@@ -77,7 +72,7 @@ public static class TodoEndpoints
         // DELETE /todos/1
         todoGroup.MapDelete(
             "/{id}",
-            async (int id, ITodoService todoService) =>
+            async (int id, ITodoRepository todoService) =>
             {
                 var todo = await todoService.GetById(id);
 
@@ -96,23 +91,16 @@ public static class TodoEndpoints
         // PATCH /todos/1
         todoGroup.MapPatch(
             "/{id}",
-            async (int id, UpdateTodoDTO todoDTO, ITodoService todoService) =>
+            async (int id, UpdateTodoDTO todoDTO, ITodoRepository todoService) =>
             {
                 var todo = await todoService.GetById(id);
 
-                if (todo == null)
+                if (todo is null)
                     return Results.NotFound(
                         $"A todo item with id={id} not found!"
                     );
 
-                if (todoDTO.Title != null)
-                    todo.Title = todoDTO.Title;
-
-                if (todoDTO.IsCompleted != null)
-                    todo.IsCompleted = (bool)todoDTO.IsCompleted;
-
-                if (todoDTO.DueDate != null)
-                    todo.DueDate = (DateTime)todoDTO.DueDate;
+                todo.PatchTodo(todoDTO);
 
                 await todoService.SaveChangesAsync();
 
@@ -123,33 +111,28 @@ public static class TodoEndpoints
         // GET /todos/completed
         todoGroup.MapGet(
             "/completed",
-            async (ITodoService todoService)
-                => await todoService
-                            .GetAll(todo => todo.IsCompleted == true)
+            async (ITodoRepository todoService)
+                => await todoService.GetComplete()
         );
 
         // GET /todos/pending
         todoGroup.MapGet(
             "/pending",
-            async (ITodoService todoService)
-                => await todoService
-                            .GetAll(todo => todo.IsCompleted == false)
+            async (ITodoRepository todoService)
+                => await todoService.GetInComplete()
         );
 
         // GET /find?title=...
         todoGroup.MapGet(
             "/find",
-            async (string? title, ITodoService todoService) =>
+            async (string? title, ITodoRepository todoService) =>
             {
-                if (string.IsNullOrEmpty(title))
+                if (!title.IsValidateTitle())
                     return Results.BadRequest(
                         $"You should specify a value for title parameter!"
                     );
                 
-                var foundTodos = await todoService
-                                    .GetAll(
-                                        todo => todo.Title.Contains(title)
-                                    );
+                var foundTodos = await todoService.SearchByTitle(title!);
 
                 return Results.Ok(foundTodos);
             }

@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using TodoList_API.Data.Context;
 using TodoList_API.Models;
 
-namespace TodoList_API.Services;
+namespace TodoList_API.Repositories;
 
 public class TodoRepository(TodoListContext dbContext)
     : ITodoRepository

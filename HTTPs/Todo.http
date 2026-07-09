@@ -1,19 +1,18 @@
 GET http://localhost:5056/todos
 
 ###
-GET http://localhost:5056/todos
+GET http://localhost:5056/todos/1
 
 ###
 POST http://localhost:5056/todos
 Content-Type: application/json
 
 {
-    "Title": "Do the dishes!",
-    "DueDate": "2028-01-01T15:43"
+    "Title": "Do Homework",
+    "DueDate": "2029-04-23T16:30"
 }
 
-###
-PATCH 
+### 
 DELETE http://localhost:5056/todos/2
 
 ###
@@ -23,6 +22,9 @@ Content-Type: application/json
 {
     "IsCompleted": true
 }
+
+###
+GET http://localhost:5056/todos/completed
 
 ###
 GET http://localhost:5056/todos/pending

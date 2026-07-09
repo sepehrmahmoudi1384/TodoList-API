@@ -1,7 +1,7 @@
 using System.Linq.Expressions;
 using TodoList_API.Models;
 
-namespace TodoList_API.Services;
+namespace TodoList_API.Repositories;
 
 public interface ITodoRepository
 {

@@ -1,7 +1,7 @@
 using TodoList_API.DTOs;
 using TodoList_API.Models;
 
-namespace TodoList_API.Services.Extensions;
+namespace TodoList_API.Repositories.Extensions;
 
 public static class TodoRepositoryExtensions
 {

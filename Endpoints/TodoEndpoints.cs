@@ -1,8 +1,8 @@
 using TodoList_API.DTOs;
 using TodoList_API.DTOs.Extensions;
 using TodoList_API.Models;
-using TodoList_API.Services;
-using TodoList_API.Services.Extensions;
+using TodoList_API.Repositories;
+using TodoList_API.Repositories.Extensions;
 
 namespace TodoList_API.Endpoints;
 
